@@ -1,0 +1,1611 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tạp Hoá Công Nghệ • Bio Chính Thức</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & Inter cho hiển thị tiếng Việt sắc nét -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Be Vietnam Pro"', 'Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- Thư viện tạo mã QR gọn nhẹ cho hộp thoại Chia sẻ -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+</head>
+<body class="antialiased selection:bg-violet-500/30 min-h-screen overflow-x-hidden transition-colors duration-500">
+
+  <!-- Hiệu ứng ánh sáng nền (Ambient Neon Glow) -->
+  <div id="ambient-bg" class="fixed inset-0 -z-10 overflow-hidden pointer-events-none transition-all duration-700">
+    <div id="blob-1" class="absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-45 transition-colors duration-700"></div>
+    <div id="blob-2" class="absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-40 transition-colors duration-700"></div>
+    <div id="blob-3" class="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-35 transition-colors duration-700"></div>
+  </div>
+
+  <!-- Thanh công cụ nổi góc trên bên phải -->
+  <header class="fixed top-4 right-4 left-4 sm:left-auto z-40 flex items-center justify-end gap-2 pointer-events-none">
+    <div id="toolbar-container" class="pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl backdrop-blur-xl border shadow-lg transition-all duration-300">
+      <!-- Nút chuyển nhanh giao diện -->
+      <button
+        id="quick-theme-btn"
+        type="button"
+        title="Đổi nhanh giao diện màu sắc"
+        class="p-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center"
+        aria-label="Đổi nhanh giao diện màu sắc"
+      >
+        <span id="quick-theme-icon" class="w-4 h-4 block"></span>
+      </button>
+
+      <!-- Nút Chia sẻ (QR & Sao chép liên kết) -->
+      <button
+        id="open-share-btn"
+        type="button"
+        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+        </svg>
+        <span class="hidden sm:inline">Chia sẻ</span>
+      </button>
+
+      <!-- Nút Tải xuống file index.html độc lập -->
+      <button
+        id="export-html-btn"
+        type="button"
+        class="px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+        </svg>
+        <span class="hidden md:inline">Tải xuống HTML</span>
+        <span class="inline md:hidden">Xuất</span>
+      </button>
+
+      <!-- Nút mở bảng Tùy chỉnh -->
+      <button
+        id="open-editor-btn"
+        type="button"
+        class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-sm"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+        </svg>
+        <span>Tùy chỉnh</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Nội dung chính của trang Bio -->
+  <main class="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 pt-24 pb-16 sm:pt-28 sm:pb-20">
+    <!-- Input ẩn để tải ảnh đại diện trực tiếp từ thiết bị -->
+    <input id="avatar-file-input" type="file" accept="image/*" class="hidden" />
+
+    <!-- PHẦN 1: THÔNG TIN THƯƠNG HIỆU (PROFILE HEADER) -->
+    <section id="profile-section" class="flex flex-col items-center text-center mb-8 sm:mb-10">
+      <!-- Ảnh đại diện tròn kèm viền gradient công nghệ -->
+      <div class="relative group mb-5">
+        <button
+          id="avatar-trigger"
+          type="button"
+          title="Nhấn để tải ảnh đại diện mới"
+          class="relative block w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 transition-transform duration-300 group-hover:scale-[1.03] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500"
+        >
+          <div id="avatar-ring" class="w-full h-full rounded-full p-0.5 transition-all duration-500 shadow-lg">
+            <img
+              id="profile-avatar"
+              src="https://placehold.co/240x240/4c1d95/f5f3ff?text=TH"
+              onerror="this.onerror=null;this.src='https://placehold.co/240x240/312e81/ffffff?text=TH';"
+              alt="Logo Tạp Hoá Công Nghệ"
+              class="w-full h-full object-cover rounded-full shadow-inner"
+            />
+          </div>
+          <!-- Lớp phủ đổi ảnh khi di chuột -->
+          <div class="absolute inset-1 rounded-full bg-black/55 opacity-0 group-hover:opacity-100 transition-opacity duration-200 flex flex-col items-center justify-center text-white">
+            <svg class="w-5 h-5 mb-0.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            <span class="text-[10px] font-semibold">Đổi ảnh</span>
+          </div>
+        </button>
+      </div>
+
+      <!-- Tên thương hiệu + Tích xanh xác minh -->
+      <div class="flex items-center justify-center gap-2 mb-1">
+        <h1 id="profile-name" class="text-2xl sm:text-3xl font-extrabold tracking-tight"></h1>
+        <span id="profile-verified" title="Thương hiệu đã xác minh" class="inline-flex items-center justify-center shrink-0">
+          <svg class="w-5 h-5 sm:w-6 sm:h-6 text-sky-400 drop-shadow-sm" viewBox="0 0 24 24" fill="currentColor">
+            <path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+          </svg>
+        </span>
+      </div>
+
+      <!-- Handle / Phụ đề -->
+      <p id="profile-handle" class="text-xs sm:text-sm font-semibold tracking-wide mb-3"></p>
+
+      <!-- Mô tả ngắn -->
+      <p id="profile-bio" class="text-sm sm:text-base max-w-lg leading-relaxed mb-4"></p>
+
+      <!-- Trạng thái hoạt động -->
+      <div id="status-pill" class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md mb-6 transition-colors duration-300">
+        <span class="relative flex h-2 w-2">
+          <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+          <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+        </span>
+        <span id="profile-status"></span>
+      </div>
+
+      <!-- Hàng icon mạng xã hội / kênh tư vấn nhanh -->
+      <div id="social-row" class="flex items-center justify-center flex-wrap gap-2.5 sm:gap-3"></div>
+    </section>
+
+    <!-- PHẦN 2: LƯỚI THẺ BENTO DỊCH VỤ & LIÊN HỆ -->
+    <section aria-label="Dịch vụ và kênh liên hệ nổi bật">
+      <div id="bento-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4"></div>
+    </section>
+
+    <!-- Chân trang -->
+    <footer class="mt-12 pt-6 text-center">
+      <p id="footer-text" class="text-xs opacity-60"></p>
+    </footer>
+  </main>
+
+  <!-- BẢNG TÙY CHỈNH TRỰC QUAN (SLIDE-OVER DRAWER) -->
+  <div id="editor-backdrop" class="fixed inset-0 z-50 bg-black/55 backdrop-blur-sm hidden opacity-0 transition-opacity duration-300">
+    <aside
+      id="editor-drawer"
+      class="fixed top-0 right-0 h-full w-full max-w-md bg-white text-slate-900 shadow-2xl transform translate-x-full transition-transform duration-300 flex flex-col border-l border-slate-200"
+    >
+      <!-- Header bảng tùy chỉnh -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-200/80 shrink-0">
+        <div>
+          <h2 class="text-base font-bold">Tùy chỉnh trang Bio</h2>
+          <p class="text-xs text-slate-500">Mọi thay đổi tự động lưu trên trình duyệt</p>
+        </div>
+        <button
+          id="close-editor-btn"
+          type="button"
+          class="p-2 rounded-xl text-slate-500 hover:bg-slate-100 transition-colors"
+          aria-label="Đóng bảng tùy chỉnh"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Thanh chọn Tab -->
+      <div class="grid grid-cols-3 gap-1 p-2 mx-4 mt-3 bg-slate-100 rounded-xl shrink-0">
+        <button data-tab="profile" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Thương hiệu</button>
+        <button data-tab="links" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Thẻ Bento</button>
+        <button data-tab="theme" class="editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all">Giao diện</button>
+      </div>
+
+      <!-- Nội dung cuộn của bảng Tùy chỉnh -->
+      <div id="editor-body" class="flex-1 overflow-y-auto px-5 py-4 space-y-5">
+        <!-- TAB 1: CHỈNH SỬA THƯƠNG HIỆU -->
+        <div id="tab-profile" class="space-y-4">
+          <!-- Đổi logo / ảnh đại diện -->
+          <div class="flex items-center gap-4 p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70">
+            <img id="editor-avatar-preview" src="https://placehold.co/240x240/4c1d95/f5f3ff?text=TH" alt="Xem trước ảnh đại diện" class="w-14 h-14 rounded-full object-cover border border-slate-200" />
+            <div class="flex-1 min-w-0">
+              <p class="text-xs font-semibold mb-1.5">Logo / Ảnh đại diện</p>
+              <div class="flex flex-wrap gap-2">
+                <button id="editor-upload-avatar-btn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg bg-violet-600 text-white hover:bg-violet-700 transition">
+                  Tải ảnh lên
+                </button>
+                <button id="editor-reset-avatar-btn" type="button" class="px-3 py-1.5 text-xs font-medium rounded-lg border border-slate-300 hover:bg-slate-100 transition">
+                  Mặc định
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <label for="input-name" class="block text-xs font-semibold mb-1.5">Tên hiển thị</label>
+            <input id="input-name" type="text" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+
+          <div>
+            <label for="input-handle" class="block text-xs font-semibold mb-1.5">Handle / Phụ đề</label>
+            <input id="input-handle" type="text" placeholder="@genz.taphoacn" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+
+          <div class="flex items-center justify-between py-1">
+            <label for="input-verified" class="text-xs font-semibold">Hiển thị tích xanh xác minh</label>
+            <input id="input-verified" type="checkbox" class="w-4 h-4 rounded accent-violet-600 cursor-pointer" />
+          </div>
+
+          <div>
+            <label for="input-bio" class="block text-xs font-semibold mb-1.5">Mô tả ngắn</label>
+            <textarea id="input-bio" rows="3" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"></textarea>
+          </div>
+
+          <div>
+            <label for="input-status" class="block text-xs font-semibold mb-1.5">Nhãn trạng thái hoạt động</label>
+            <input id="input-status" type="text" class="w-full px-3.5 py-2.5 text-sm rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+          </div>
+
+          <!-- Kênh tư vấn & Liên hệ nhanh -->
+          <div class="pt-3 border-t border-slate-200 space-y-3">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-slate-500">Kênh tư vấn & Hợp tác</h3>
+            <div>
+              <label for="input-social-facebook" class="block text-xs font-medium mb-1">Facebook URL</label>
+              <input id="input-social-facebook" type="url" placeholder="https://www.facebook.com/seal.t.kobiet" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+            <div>
+              <label for="input-social-tiktok" class="block text-xs font-medium mb-1">TikTok URL</label>
+              <input id="input-social-tiktok" type="url" placeholder="https://www.tiktok.com/@genz.taphoacn" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+            <div>
+              <label for="input-social-instagram" class="block text-xs font-medium mb-1">Instagram URL</label>
+              <input id="input-social-instagram" type="url" placeholder="https://www.instagram.com/genz.taphoacn" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+            <div>
+              <label for="input-social-zalo" class="block text-xs font-medium mb-1">Zalo URL</label>
+              <input id="input-social-zalo" type="url" placeholder="https://zalo.me/..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+            <div>
+              <label for="input-social-email" class="block text-xs font-medium mb-1">Gmail liên hệ công việc / Hợp tác</label>
+              <input id="input-social-email" type="email" placeholder="kiakillgamming@gmail.com" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: QUẢN LÝ CÁC THẺ BENTO -->
+        <div id="tab-links" class="hidden space-y-4">
+          <button
+            id="add-link-btn"
+            type="button"
+            class="w-full py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm transition-colors"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+            </svg>
+            Thêm thẻ Bento mới
+          </button>
+
+          <!-- Form thêm / sửa thẻ Bento -->
+          <form id="link-form" class="hidden p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3">
+            <div class="flex items-center justify-between">
+              <h4 id="link-form-title" class="text-xs font-bold uppercase tracking-wider text-violet-600">Thêm thẻ mới</h4>
+              <button id="cancel-link-form" type="button" class="text-xs text-slate-500 hover:text-slate-700">Hủy</button>
+            </div>
+            <input type="hidden" id="link-id" />
+
+            <div>
+              <label for="link-title" class="block text-xs font-medium mb-1">Tiêu đề thẻ *</label>
+              <input id="link-title" type="text" required placeholder="VD: Locket Gold (PTB, AI)" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="link-badge" class="block text-xs font-medium mb-1">Huy hiệu (Badge)</label>
+                <input id="link-badge" type="text" placeholder="VD: HOT, Uy tín..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+              </div>
+              <div>
+                <label for="link-badge-style" class="block text-xs font-medium mb-1">Màu huy hiệu</label>
+                <select id="link-badge-style" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                  <option value="hot">Nổi bật (Đỏ / Cam)</option>
+                  <option value="cyber">Công nghệ (Xanh dương)</option>
+                  <option value="trust">Uy tín (Xanh lá)</option>
+                  <option value="neutral">Tối giản (Mặc định)</option>
+                </select>
+              </div>
+            </div>
+
+            <div>
+              <label for="link-desc" class="block text-xs font-medium mb-1">Mô tả chi tiết</label>
+              <textarea id="link-desc" rows="2" placeholder="Mô tả ngắn gọn về dịch vụ hoặc liên kết..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500 resize-none"></textarea>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="link-icon" class="block text-xs font-medium mb-1">Biểu tượng</label>
+                <select id="link-icon" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                  <option value="locket">Locket Gold / AI</option>
+                  <option value="gamepad">Game Port (GTA V)</option>
+                  <option value="home">Thuê Trọ / Nhà ở</option>
+                  <option value="facebook">Facebook</option>
+                  <option value="tiktok">TikTok</option>
+                  <option value="instagram">Instagram</option>
+                  <option value="messenger">Messenger</option>
+                  <option value="zalo">Zalo Tư vấn</option>
+                  <option value="mail">Gmail / Hợp tác</option>
+                  <option value="sparkles">Dịch vụ số / Khác</option>
+                </select>
+              </div>
+              <div>
+                <label for="link-size" class="block text-xs font-medium mb-1">Kích thước Bento</label>
+                <select id="link-size" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                  <option value="wide">Nổi bật (Rộng 2 cột)</option>
+                  <option value="normal">Tiêu chuẩn (1 cột)</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-2.5">
+              <div>
+                <label for="link-action" class="block text-xs font-medium mb-1">Loại tương tác</label>
+                <select id="link-action" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500">
+                  <option value="url">Mở liên kết (URL)</option>
+                  <option value="email">Liên hệ Email (2 nút)</option>
+                  <option value="copy">Sao chép nhanh</option>
+                </select>
+              </div>
+              <div>
+                <label for="link-cta" class="block text-xs font-medium mb-1">Chữ nút hành động</label>
+                <input id="link-cta" type="text" placeholder="VD: Tư vấn ngay" class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+              </div>
+            </div>
+
+            <div>
+              <label id="link-url-label" for="link-url" class="block text-xs font-medium mb-1">Đường dẫn (URL) *</label>
+              <input id="link-url" type="text" required placeholder="https://..." class="w-full px-3 py-2 text-xs rounded-xl border border-slate-200 bg-white focus:outline-none focus:ring-2 focus:ring-violet-500" />
+            </div>
+
+            <button type="submit" class="w-full py-2.5 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:opacity-90 transition">
+              Lưu thẻ Bento
+            </button>
+          </form>
+
+          <!-- Danh sách các thẻ Bento hiện có -->
+          <div id="editor-links-list" class="space-y-2.5"></div>
+        </div>
+
+        <!-- TAB 3: CHỌN GIAO DIỆN MÀU SẮC -->
+        <div id="tab-theme" class="hidden space-y-4">
+          <p class="text-xs text-slate-500">Chọn phong cách công nghệ phù hợp với thương hiệu của bạn:</p>
+          <div id="theme-grid" class="grid grid-cols-1 gap-3"></div>
+
+          <!-- Nút Khôi phục mặc định kèm hộp xác nhận an toàn -->
+          <div class="pt-4 mt-4 border-t border-slate-200">
+            <button
+              id="request-reset-btn"
+              type="button"
+              class="w-full py-2.5 px-4 rounded-xl border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold transition-colors"
+            >
+              Khôi phục mặc định
+            </button>
+            <div id="confirm-reset-box" class="hidden mt-3 p-3.5 rounded-xl bg-rose-50 border border-rose-200 space-y-2.5">
+              <p class="text-xs text-rose-700 font-medium">Bạn có chắc chắn muốn đặt lại toàn bộ nội dung về mặc định của Tạp Hoá Công Nghệ không?</p>
+              <div class="flex gap-2">
+                <button id="confirm-reset-yes" type="button" class="flex-1 py-1.5 rounded-lg bg-rose-600 text-white text-xs font-semibold hover:bg-rose-700 transition">Xác nhận đặt lại</button>
+                <button id="confirm-reset-no" type="button" class="flex-1 py-1.5 rounded-lg bg-white border border-slate-200 text-xs font-medium">Hủy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Footer bảng Tùy chỉnh -->
+      <div class="p-4 border-t border-slate-200/80 shrink-0 flex gap-2">
+        <button id="drawer-export-btn" type="button" class="flex-1 py-2.5 px-4 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold transition flex items-center justify-center gap-1.5 shadow-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+          </svg>
+          Tải xuống file index.html
+        </button>
+      </div>
+    </aside>
+  </div>
+
+  <!-- HỘP THOẠI CHIA SẺ & MÃ QR (SHARE MODAL) -->
+  <div id="share-modal" class="fixed inset-0 z-50 hidden items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
+    <div class="w-full max-w-sm rounded-3xl bg-white text-slate-900 border border-slate-200 shadow-2xl p-6 relative">
+      <button
+        id="close-share-btn"
+        type="button"
+        class="absolute top-4 right-4 p-2 rounded-xl text-slate-400 hover:bg-slate-100 transition"
+        aria-label="Đóng hộp thoại chia sẻ"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <div class="text-center mb-5">
+        <h3 class="text-lg font-bold">Chia sẻ trang Bio</h3>
+        <p class="text-xs text-slate-500 mt-1">Quét mã QR hoặc sao chép liên kết Tạp Hoá Công Nghệ</p>
+      </div>
+
+      <!-- Khung chứa mã QR -->
+      <div class="flex justify-center mb-5">
+        <div class="p-4 bg-white rounded-2xl shadow-inner border border-slate-200 inline-block">
+          <div id="qrcode-container" class="w-44 h-44 flex items-center justify-center"></div>
+        </div>
+      </div>
+
+      <!-- Ô nhập đường dẫn & nút sao chép -->
+      <div class="space-y-3">
+        <div>
+          <label for="share-url-input" class="block text-[11px] font-semibold text-slate-500 mb-1">Liên kết trang Bio</label>
+          <div class="flex gap-2">
+            <input
+              id="share-url-input"
+              type="text"
+              class="flex-1 min-w-0 px-3 py-2 text-xs rounded-xl border border-slate-200 bg-slate-50 focus:outline-none focus:ring-2 focus:ring-violet-500"
+            />
+            <button
+              id="copy-share-url-btn"
+              type="button"
+              class="px-3.5 py-2 rounded-xl bg-violet-600 hover:bg-violet-700 text-white text-xs font-semibold shrink-0 transition"
+            >
+              Sao chép
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- THÔNG BÁO TOAST NỔI PHÍA DƯỚI -->
+  <div
+    id="toast-container"
+    class="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60] pointer-events-none transition-all duration-300 opacity-0 translate-y-4"
+    role="status"
+    aria-live="polite"
+  >
+    <div class="flex items-center gap-2.5 px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs sm:text-sm font-medium shadow-xl border border-white/10">
+      <svg class="w-4 h-4 text-emerald-400 shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+      </svg>
+      <span id="toast-message">Đã sao chép thành công!</span>
+    </div>
+  </div>
+
+  <!-- SCRIPT CHÍNH: QUẢN LÝ DỮ LIỆU, GIAO DIỆN, TÙY CHỈNH & XUẤT HTML -->
+  <script>
+    (function () {
+      'use strict';
+
+      // =========================================================================
+      // 1. DỮ LIỆU MẶC ĐỊNH CHO THƯƠNG HIỆU "TẠP HOÁ CÔNG NGHỆ"
+      // =========================================================================
+      const STORAGE_KEY = 'thcn_bio_data_v2';
+      const DEFAULT_AVATAR = 'https://placehold.co/240x240/4c1d95/f5f3ff?text=TH';
+
+      const DEFAULT_DATA = {
+        theme: 'tech-violet',
+        profile: {
+          name: 'Tạp Hoá Công Nghệ',
+          handle: '@genz.taphoacn',
+          verified: true,
+          bio: 'Chuyên Locket Gold (PTB, AI) • Game GTA V Port (iOS + Android) • Hỗ trợ Thuê Trọ uy tín, nhanh chóng.',
+          status: 'Đang hoạt động • Hỗ trợ nhanh chóng',
+          avatar: DEFAULT_AVATAR,
+          socials: {
+            facebook: 'https://www.facebook.com/seal.t.kobiet',
+            tiktok: 'https://www.tiktok.com/@genz.taphoacn?_r=1&_t=ZS-9BcdeKT3oQr',
+            instagram: 'https://www.instagram.com/genz.taphoacn',
+            zalo: 'https://zalo.me',
+            email: 'kiakillgamming@gmail.com',
+          },
+        },
+        links: [
+          {
+            id: 'locket-gold-ptb-ai',
+            title: 'Locket Gold (PTB, AI)',
+            badge: 'HOT',
+            badgeStyle: 'hot',
+            description: 'Nâng cấp Locket Gold đầy đủ tính năng cao cấp, hỗ trợ PTB & AI mượt mà. Cài đặt nhanh gọn và bảo hành, hỗ trợ tận tâm.',
+            url: 'https://www.facebook.com/seal.t.kobiet',
+            icon: 'locket',
+            size: 'wide',
+            action: 'url',
+            ctaText: 'Đăng ký ngay',
+          },
+          {
+            id: 'gta-v-port-mobile',
+            title: 'Game GTA V Port (iOS + Android)',
+            badge: 'GAMING',
+            badgeStyle: 'cyber',
+            description: 'Cài đặt & trải nghiệm mượt mà trên cả iOS và Android, hỗ trợ hướng dẫn chi tiết từ A–Z.',
+            url: 'https://www.facebook.com/seal.t.kobiet',
+            icon: 'gamepad',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Nhận bản cài',
+          },
+          {
+            id: 'thue-tro-uy-tin',
+            title: 'Thuê Trọ',
+            badge: 'UY TÍN',
+            badgeStyle: 'trust',
+            description: 'Tìm & thuê trọ nhanh chóng, thông tin minh bạch, giá hợp lý và hỗ trợ xem phòng tận tình.',
+            url: 'https://www.facebook.com/seal.t.kobiet',
+            icon: 'home',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Tìm phòng ngay',
+          },
+          {
+            id: 'kenh-facebook',
+            title: 'Facebook Chính Chủ',
+            badge: 'Tư vấn',
+            badgeStyle: 'cyber',
+            description: 'Nhắn tin tư vấn & đặt dịch vụ',
+            url: 'https://www.facebook.com/seal.t.kobiet',
+            icon: 'facebook',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Nhắn Facebook',
+          },
+          {
+            id: 'kenh-tiktok',
+            title: 'TikTok @genz.taphoacn',
+            badge: 'Video',
+            badgeStyle: 'hot',
+            description: 'Video review, hướng dẫn & ưu đãi',
+            url: 'https://www.tiktok.com/@genz.taphoacn?_r=1&_t=ZS-9BcdeKT3oQr',
+            icon: 'tiktok',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Xem TikTok',
+          },
+          {
+            id: 'kenh-instagram',
+            title: 'Instagram',
+            badge: '@genz.taphoacn',
+            badgeStyle: 'neutral',
+            description: 'Kho ứng dụng & ưu đãi sinh viên',
+            url: 'https://www.instagram.com/genz.taphoacn',
+            icon: 'instagram',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Mở Instagram',
+          },
+          {
+            id: 'kenh-zalo',
+            title: 'Zalo Tư Vấn',
+            badge: '24/7',
+            badgeStyle: 'cyber',
+            description: 'Hỗ trợ nhanh 24/7',
+            url: 'https://zalo.me',
+            icon: 'zalo',
+            size: 'normal',
+            action: 'url',
+            ctaText: 'Nhắn Zalo',
+          },
+          {
+            id: 'lien-he-hop-tac',
+            title: 'Liên hệ công việc / Hợp tác',
+            badge: 'Hợp tác',
+            badgeStyle: 'neutral',
+            description: 'Liên hệ booking, hợp tác kinh doanh hoặc hỗ trợ kỹ thuật trực tiếp qua Gmail chính thức.',
+            url: 'kiakillgamming@gmail.com',
+            icon: 'mail',
+            size: 'wide',
+            action: 'email',
+            ctaText: 'Gửi Email',
+          },
+        ],
+      };
+
+      // =========================================================================
+      // 2. CẤU HÌNH 4 GIAO DIỆN MÀU SẮC CÔNG NGHỆ
+      // =========================================================================
+      const THEME_ORDER = ['tech-violet', 'dark-night', 'cyber-blue', 'minimal-light'];
+
+      const THEMES = {
+        'tech-violet': {
+          name: 'Tím Công Nghệ',
+          desc: 'Nổi bật, hiện đại với ánh sáng neon tím & xanh',
+          preview: ['#0f0720', '#7c3aed', '#38bdf8'],
+          body: 'bg-[#0b0618] text-slate-100',
+          blobs: ['bg-violet-600', 'bg-fuchsia-600', 'bg-sky-500'],
+          avatarRing: 'bg-gradient-to-tr from-violet-500 via-fuchsia-500 to-sky-400',
+          handle: 'text-violet-300',
+          bio: 'text-slate-300',
+          statusPill: 'bg-white/5 border-white/15 text-slate-200',
+          toolbar: 'bg-slate-900/75 border-white/15 text-slate-200',
+          toolbarBtn: 'hover:bg-white/10 text-slate-200',
+          toolbarPrimary: 'bg-violet-600 hover:bg-violet-500 text-white',
+          socialBtn: 'bg-white/5 hover:bg-white/15 border-white/15 text-slate-100',
+          card: 'bg-white/[0.06] hover:bg-white/[0.11] border-white/12 hover:border-violet-400/50 text-slate-100 shadow-lg shadow-black/25',
+          cardWide: 'bg-gradient-to-br from-violet-600/25 via-fuchsia-600/15 to-sky-500/15 hover:from-violet-600/35 hover:to-sky-500/25 border-violet-400/30 hover:border-violet-300/60 text-white shadow-xl shadow-violet-950/40',
+          cardDesc: 'text-slate-300',
+          ctaPrimary: 'bg-violet-600 hover:bg-violet-500 text-white',
+          ctaSecondary: 'bg-white/10 hover:bg-white/20 text-white border border-white/15',
+          badgeNeutral: 'bg-white/10 text-violet-200 border border-white/15',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>',
+        },
+        'dark-night': {
+          name: 'Đêm Tối (OLED)',
+          desc: 'Sang trọng, sâu thẳm và tối ưu mắt ban đêm',
+          preview: ['#09090b', '#27272a', '#10b981'],
+          body: 'bg-zinc-950 text-zinc-100',
+          blobs: ['bg-zinc-700', 'bg-emerald-600', 'bg-indigo-700'],
+          avatarRing: 'bg-gradient-to-tr from-zinc-400 via-white to-emerald-400',
+          handle: 'text-zinc-400',
+          bio: 'text-zinc-300',
+          statusPill: 'bg-zinc-900/80 border-zinc-800 text-zinc-300',
+          toolbar: 'bg-zinc-900/85 border-zinc-800 text-zinc-200',
+          toolbarBtn: 'hover:bg-zinc-800 text-zinc-200',
+          toolbarPrimary: 'bg-white hover:bg-zinc-200 text-zinc-950',
+          socialBtn: 'bg-zinc-900/80 hover:bg-zinc-800 border-zinc-800 text-zinc-100',
+          card: 'bg-zinc-900/75 hover:bg-zinc-900 border-zinc-800 hover:border-zinc-600 text-zinc-100 shadow-lg shadow-black/40',
+          cardWide: 'bg-gradient-to-br from-zinc-900 via-zinc-900 to-emerald-950/50 hover:border-emerald-500/40 border-zinc-700/80 text-white shadow-xl shadow-black/50',
+          cardDesc: 'text-zinc-400',
+          ctaPrimary: 'bg-white hover:bg-zinc-200 text-zinc-950',
+          ctaSecondary: 'bg-zinc-800 hover:bg-zinc-700 text-zinc-100 border border-zinc-700',
+          badgeNeutral: 'bg-zinc-800 text-zinc-300 border border-zinc-700',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"/></svg>',
+        },
+        'cyber-blue': {
+          name: 'Xanh Cyber',
+          desc: 'Cảm hứng gaming & kỹ thuật số sắc nét',
+          preview: ['#041325', '#0284c7', '#22d3ee'],
+          body: 'bg-[#04101f] text-sky-50',
+          blobs: ['bg-sky-500', 'bg-cyan-500', 'bg-blue-700'],
+          avatarRing: 'bg-gradient-to-tr from-sky-400 via-cyan-300 to-blue-600',
+          handle: 'text-cyan-300',
+          bio: 'text-slate-300',
+          statusPill: 'bg-sky-950/60 border-sky-400/25 text-sky-200',
+          toolbar: 'bg-slate-900/80 border-sky-400/20 text-sky-100',
+          toolbarBtn: 'hover:bg-sky-400/15 text-sky-100',
+          toolbarPrimary: 'bg-sky-500 hover:bg-sky-400 text-slate-950',
+          socialBtn: 'bg-sky-950/50 hover:bg-sky-900/60 border-sky-400/25 text-sky-100',
+          card: 'bg-slate-900/65 hover:bg-slate-900/90 border-sky-400/20 hover:border-cyan-400/50 text-sky-50 shadow-lg shadow-black/30',
+          cardWide: 'bg-gradient-to-br from-sky-600/25 via-cyan-600/15 to-blue-700/20 hover:from-sky-600/35 hover:to-blue-700/30 border-cyan-400/35 hover:border-cyan-300/65 text-white shadow-xl shadow-sky-950/50',
+          cardDesc: 'text-slate-300',
+          ctaPrimary: 'bg-cyan-400 hover:bg-cyan-300 text-slate-950',
+          ctaSecondary: 'bg-sky-950/80 hover:bg-sky-900 text-sky-100 border border-sky-400/30',
+          badgeNeutral: 'bg-sky-500/15 text-sky-200 border border-sky-400/30',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>',
+        },
+        'minimal-light': {
+          name: 'Tối Giản Sáng',
+          desc: 'Thanh lịch, sạch sẽ và dễ đọc mọi lúc',
+          preview: ['#f8fafc', '#ffffff', '#6d28d9'],
+          body: 'bg-slate-50 text-slate-900',
+          blobs: ['bg-violet-300', 'bg-sky-300', 'bg-fuchsia-200'],
+          avatarRing: 'bg-gradient-to-tr from-violet-600 via-fuchsia-500 to-sky-500',
+          handle: 'text-violet-600',
+          bio: 'text-slate-600',
+          statusPill: 'bg-white/80 border-slate-200 text-slate-700 shadow-sm',
+          toolbar: 'bg-white/85 border-slate-200 text-slate-700',
+          toolbarBtn: 'hover:bg-slate-100 text-slate-700',
+          toolbarPrimary: 'bg-slate-900 hover:bg-slate-800 text-white',
+          socialBtn: 'bg-white/85 hover:bg-white border-slate-200 text-slate-800 shadow-sm',
+          card: 'bg-white/85 hover:bg-white border-slate-200/90 hover:border-violet-300 text-slate-900 shadow-sm hover:shadow-md',
+          cardWide: 'bg-gradient-to-br from-violet-50 via-white to-sky-50 hover:from-violet-100/70 hover:to-sky-100/70 border-violet-200 hover:border-violet-400 text-slate-900 shadow-md',
+          cardDesc: 'text-slate-600',
+          ctaPrimary: 'bg-violet-600 hover:bg-violet-700 text-white',
+          ctaSecondary: 'bg-slate-100 hover:bg-slate-200 text-slate-800 border border-slate-200',
+          badgeNeutral: 'bg-slate-100 text-slate-700 border border-slate-200',
+          iconToggle: '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"/></svg>',
+        },
+      };
+
+      // Bộ biểu tượng SVG nội tuyến sắc nét
+      const ICONS = {
+        locket: {
+          color: 'bg-amber-500/15 text-amber-400 border-amber-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>',
+        },
+        gamepad: {
+          color: 'bg-sky-500/15 text-sky-400 border-sky-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 4a2 2 0 114 0v1a1 1 0 001 1h3a1 1 0 011 1v3a1 1 0 01-1 1h-1a2 2 0 100 4h1a1 1 0 011 1v3a1 1 0 01-1 1h-3a1 1 0 01-1-1v-1a2 2 0 10-4 0v1a1 1 0 01-1 1H7a1 1 0 01-1-1v-3a1 1 0 00-1-1H4a2 2 0 110-4h1a1 1 0 001-1V7a1 1 0 011-1h3a1 1 0 001-1V4z"/></svg>',
+        },
+        home: {
+          color: 'bg-emerald-500/15 text-emerald-400 border-emerald-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/></svg>',
+        },
+        facebook: {
+          color: 'bg-blue-600/15 text-blue-400 border-blue-400/30',
+          svg: '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>',
+        },
+        tiktok: {
+          color: 'bg-rose-500/15 text-rose-400 border-rose-400/30',
+          svg: '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/></svg>',
+        },
+        instagram: {
+          color: 'bg-pink-500/15 text-pink-400 border-pink-400/30',
+          svg: '<svg class="w-6 h-6" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>',
+        },
+        messenger: {
+          color: 'bg-indigo-500/15 text-indigo-400 border-indigo-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/></svg>',
+        },
+        zalo: {
+          color: 'bg-cyan-500/15 text-cyan-400 border-cyan-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a1.994 1.994 0 01-1.414-.586m0 0L11 14h4a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2v4l.586-.586z"/></svg>',
+        },
+        mail: {
+          color: 'bg-violet-500/15 text-violet-400 border-violet-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>',
+        },
+        sparkles: {
+          color: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-400/30',
+          svg: '<svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>',
+        },
+      };
+
+      // =========================================================================
+      // 3. QUẢN LÝ TRẠNG THÁI (STATE) & LOCALSTORAGE
+      // =========================================================================
+      function cloneDefault() {
+        return JSON.parse(JSON.stringify(DEFAULT_DATA));
+      }
+
+      function loadState() {
+        try {
+          const raw = localStorage.getItem(STORAGE_KEY);
+          if (!raw) return cloneDefault();
+          const parsed = JSON.parse(raw);
+          if (!parsed || !parsed.profile || !Array.isArray(parsed.links)) {
+            return cloneDefault();
+          }
+          if (!THEMES[parsed.theme]) {
+            parsed.theme = 'tech-violet';
+          }
+          return parsed;
+        } catch (err) {
+          return cloneDefault();
+        }
+      }
+
+      let state = loadState();
+      let toastTimer = null;
+
+      function saveState() {
+        try {
+          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (err) {
+          // Bỏ qua nếu trình duyệt chặn localStorage hoặc dung lượng đầy
+        }
+      }
+
+      // =========================================================================
+      // 4. HÀM TIỆN ÍCH (ESCAPE HTML, TOAST, CLIPBOARD)
+      // =========================================================================
+      function escapeHTML(str) {
+        return String(str || '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#39;');
+      }
+
+      function showToast(message) {
+        const container = document.getElementById('toast-container');
+        const msgEl = document.getElementById('toast-message');
+        msgEl.textContent = message;
+        container.classList.remove('opacity-0', 'translate-y-4');
+        container.classList.add('opacity-100', 'translate-y-0');
+
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          container.classList.remove('opacity-100', 'translate-y-0');
+          container.classList.add('opacity-0', 'translate-y-4');
+        }, 2600);
+      }
+
+      function copyToClipboard(text, successMsg) {
+        if (!text) return;
+        try {
+          const textarea = document.createElement('textarea');
+          textarea.value = text;
+          textarea.setAttribute('readonly', '');
+          textarea.style.position = 'fixed';
+          textarea.style.top = '-9999px';
+          textarea.style.left = '-9999px';
+          document.body.appendChild(textarea);
+          textarea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textarea);
+          showToast(successMsg || 'Đã sao chép vào bộ nhớ tạm!');
+        } catch (err) {
+          showToast('Không thể sao chép tự động.');
+        }
+      }
+
+      function getBadgeClass(styleKey, themeObj) {
+        if (styleKey === 'hot') {
+          return 'bg-gradient-to-r from-rose-500 to-amber-500 text-white shadow-sm';
+        }
+        if (styleKey === 'cyber') {
+          return 'bg-sky-500/20 text-sky-400 border border-sky-400/30';
+        }
+        if (styleKey === 'trust') {
+          return 'bg-emerald-500/20 text-emerald-400 border border-emerald-400/30';
+        }
+        return themeObj.badgeNeutral;
+      }
+
+      // =========================================================================
+      // 5. HIỂN THỊ GIAO DIỆN (RENDER)
+      // =========================================================================
+      function applyTheme() {
+        const t = THEMES[state.theme] || THEMES['tech-violet'];
+
+        document.body.className = `antialiased selection:bg-violet-500/30 min-h-screen overflow-x-hidden transition-colors duration-500 ${t.body}`;
+
+        document.getElementById('blob-1').className = `absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-45 transition-colors duration-700 ${t.blobs[0]}`;
+        document.getElementById('blob-2').className = `absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-40 transition-colors duration-700 ${t.blobs[1]}`;
+        document.getElementById('blob-3').className = `absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-35 transition-colors duration-700 ${t.blobs[2]}`;
+
+        document.getElementById('avatar-ring').className = `w-full h-full rounded-full p-0.5 transition-all duration-500 shadow-lg ${t.avatarRing}`;
+        document.getElementById('profile-handle').className = `text-xs sm:text-sm font-semibold tracking-wide mb-3 ${t.handle}`;
+        document.getElementById('profile-bio').className = `text-sm sm:text-base max-w-lg leading-relaxed mb-4 ${t.bio}`;
+        document.getElementById('status-pill').className = `inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md mb-6 transition-colors duration-300 ${t.statusPill}`;
+
+        document.getElementById('toolbar-container').className = `pointer-events-auto flex items-center gap-1.5 sm:gap-2 p-1.5 rounded-2xl backdrop-blur-xl border shadow-lg transition-all duration-300 ${t.toolbar}`;
+        document.getElementById('quick-theme-btn').className = `p-2.5 rounded-xl transition-all duration-200 active:scale-95 flex items-center justify-center ${t.toolbarBtn}`;
+        document.getElementById('open-share-btn').className = `px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5 ${t.toolbarBtn}`;
+        document.getElementById('export-html-btn').className = `px-3 py-2 rounded-xl text-xs sm:text-sm font-medium transition-all duration-200 active:scale-95 flex items-center gap-1.5 ${t.toolbarBtn}`;
+        document.getElementById('open-editor-btn').className = `px-3.5 py-2 rounded-xl text-xs sm:text-sm font-semibold transition-all duration-200 active:scale-95 flex items-center gap-1.5 shadow-sm ${t.toolbarPrimary}`;
+        document.getElementById('quick-theme-icon').innerHTML = t.iconToggle;
+      }
+
+      function renderProfile() {
+        const p = state.profile;
+        document.title = `${p.name} • Bio Chính Thức`;
+        document.getElementById('profile-name').textContent = p.name;
+        document.getElementById('profile-handle').textContent = p.handle || '';
+        document.getElementById('profile-verified').style.display = p.verified ? 'inline-flex' : 'none';
+        document.getElementById('profile-bio').textContent = p.bio || '';
+
+        const statusPill = document.getElementById('status-pill');
+        if (p.status && p.status.trim() !== '') {
+          statusPill.style.display = 'inline-flex';
+          document.getElementById('profile-status').textContent = p.status;
+        } else {
+          statusPill.style.display = 'none';
+        }
+
+        const avatarSrc = p.avatar || DEFAULT_AVATAR;
+        document.getElementById('profile-avatar').src = avatarSrc;
+        document.getElementById('editor-avatar-preview').src = avatarSrc;
+
+        const year = new Date().getFullYear();
+        document.getElementById('footer-text').textContent = `© ${year} ${p.name} • Trang Bio Chính Thức`;
+      }
+
+      function renderSocialRow() {
+        const t = THEMES[state.theme] || THEMES['tech-violet'];
+        const s = state.profile.socials || {};
+        const container = document.getElementById('social-row');
+        const items = [
+          { key: 'facebook', label: 'Facebook', href: s.facebook, icon: ICONS.facebook.svg, type: 'link' },
+          { key: 'tiktok', label: 'TikTok', href: s.tiktok, icon: ICONS.tiktok.svg, type: 'link' },
+          { key: 'instagram', label: 'Instagram', href: s.instagram, icon: ICONS.instagram.svg, type: 'link' },
+          { key: 'email', label: 'Email', href: s.email, icon: ICONS.mail.svg, type: 'email' },
+        ];
+
+        container.innerHTML = items
+          .filter((item) => item.href && item.href.trim() !== '')
+          .map((item) => {
+            if (item.type === 'email') {
+              return `
+                <a
+                  href="mailto:${escapeHTML(item.href)}"
+                  title="Gửi Email: ${escapeHTML(item.href)}"
+                  class="px-3.5 h-11 rounded-2xl border backdrop-blur-md flex items-center justify-center gap-2 text-xs font-semibold transition-all duration-300 hover:-translate-y-1 active:scale-95 ${t.socialBtn}"
+                  aria-label="Gửi Email hợp tác"
+                >
+                  <span class="w-4 h-4 [&>svg]:w-4 [&>svg]:h-4">${item.icon}</span>
+                  <span>Email</span>
+                </a>
+              `;
+            }
+            return `
+              <a
+                href="${escapeHTML(item.href)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                title="${item.label}"
+                class="px-3.5 h-11 rounded-2xl border backdrop-blur-md flex items-center justify-center gap-2 text-xs font-semibold transition-all duration-300 hover:-translate-y-1 active:scale-95 ${t.socialBtn}"
+                aria-label="${item.label}"
+              >
+                <span class="w-4 h-4 [&>svg]:w-4 [&>svg]:h-4">${item.icon}</span>
+                <span>${item.label}</span>
+              </a>
+            `;
+          })
+          .join('');
+      }
+
+      function renderBentoGrid() {
+        const t = THEMES[state.theme] || THEMES['tech-violet'];
+        const grid = document.getElementById('bento-grid');
+
+        if (!state.links.length) {
+          grid.innerHTML = `<div class="sm:col-span-2 text-center py-10 opacity-60 text-sm">Chưa có thẻ Bento nào. Nhấn <strong>Tùy chỉnh</strong> để thêm mới.</div>`;
+          return;
+        }
+
+        grid.innerHTML = state.links
+          .map((link) => {
+            const isWide = link.size === 'wide';
+            const spanClass = isWide ? 'sm:col-span-2' : 'sm:col-span-1';
+            const cardStyle = isWide ? t.cardWide : t.card;
+            const iconObj = ICONS[link.icon] || ICONS.sparkles;
+            const badgeHtml = link.badge
+              ? `<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider shrink-0 ${getBadgeClass(link.badgeStyle, t)}">${escapeHTML(link.badge)}</span>`
+              : '';
+
+            // Thẻ liên hệ Email có 2 nút: Sao chép Gmail & Gửi Email
+            if (link.action === 'email') {
+              const emailVal = escapeHTML(link.url);
+              return `
+                <div class="${spanClass} group relative rounded-3xl p-5 sm:p-6 border backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 ${cardStyle}">
+                  <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div class="flex items-start gap-4">
+                      <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 ${iconObj.color}">
+                        ${iconObj.svg}
+                      </div>
+                      <div class="min-w-0">
+                        <div class="flex items-center flex-wrap gap-2 mb-1">
+                          <h2 class="text-base sm:text-lg font-bold leading-snug">${escapeHTML(link.title)}</h2>
+                          ${badgeHtml}
+                        </div>
+                        <p class="text-xs sm:text-sm leading-relaxed mb-2 ${t.cardDesc}">${escapeHTML(link.description)}</p>
+                        <p class="text-xs sm:text-sm font-semibold break-all opacity-95">${emailVal}</p>
+                      </div>
+                    </div>
+                    <div class="flex flex-wrap sm:flex-nowrap items-center gap-2 shrink-0 pt-1 sm:pt-0">
+                      <button
+                        type="button"
+                        data-copy-email="${emailVal}"
+                        class="copy-email-btn flex-1 sm:flex-none px-4 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95 ${t.ctaSecondary}"
+                      >
+                        Sao chép Gmail
+                      </button>
+                      <a
+                        href="mailto:${emailVal}"
+                        class="flex-1 sm:flex-none text-center px-4 py-2.5 rounded-xl text-xs font-semibold transition-all active:scale-95 shadow-sm ${t.ctaPrimary}"
+                      >
+                        ${escapeHTML(link.ctaText || 'Gửi Email')}
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              `;
+            }
+
+            // Thẻ sao chép nhanh
+            if (link.action === 'copy') {
+              const copyVal = escapeHTML(link.url);
+              return `
+                <button
+                  type="button"
+                  data-copy-text="${copyVal}"
+                  class="copy-card-btn text-left w-full ${spanClass} group relative rounded-3xl p-5 border backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] flex flex-col justify-between gap-4 ${cardStyle}"
+                >
+                  <div class="flex items-start justify-between gap-3 w-full">
+                    <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 ${iconObj.color}">
+                      ${iconObj.svg}
+                    </div>
+                    ${badgeHtml}
+                  </div>
+                  <div>
+                    <h2 class="text-base sm:text-lg font-bold leading-snug mb-1">${escapeHTML(link.title)}</h2>
+                    <p class="text-xs sm:text-sm leading-relaxed ${t.cardDesc}">${escapeHTML(link.description)}</p>
+                  </div>
+                  <div class="flex items-center justify-between pt-2 border-t border-current/10 w-full text-xs font-semibold">
+                    <span>${escapeHTML(link.ctaText || 'Sao chép ngay')}</span>
+                    <svg class="w-4 h-4 opacity-70 group-hover:translate-x-0.5 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    </svg>
+                  </div>
+                </button>
+              `;
+            }
+
+            // Thẻ liên kết URL tiêu chuẩn hoặc nổi bật 2 cột
+            return `
+              <a
+                href="${escapeHTML(link.url)}"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="${spanClass} group relative rounded-3xl p-5 sm:p-6 border backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 active:scale-[0.99] flex flex-col justify-between gap-4 ${cardStyle}"
+              >
+                <div class="flex items-start justify-between gap-3">
+                  <div class="w-12 h-12 rounded-2xl border flex items-center justify-center shrink-0 transition-transform duration-300 group-hover:scale-105 ${iconObj.color}">
+                    ${iconObj.svg}
+                  </div>
+                  <div class="flex items-center gap-2">
+                    ${badgeHtml}
+                    <span class="w-8 h-8 rounded-full bg-current/5 flex items-center justify-center opacity-70 group-hover:opacity-100 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M7 17L17 7M17 7H7M17 7v10" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+                <div>
+                  <h2 class="text-base sm:text-lg font-bold leading-snug mb-1.5">${escapeHTML(link.title)}</h2>
+                  <p class="text-xs sm:text-sm leading-relaxed ${t.cardDesc}">${escapeHTML(link.description)}</p>
+                </div>
+                ${
+                  link.ctaText
+                    ? `<div class="pt-1 flex items-center gap-1.5 text-xs font-semibold opacity-90 group-hover:opacity-100">
+                        <span>${escapeHTML(link.ctaText)}</span>
+                        <svg class="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+                        </svg>
+                      </div>`
+                    : ''
+                }
+              </a>
+            `;
+          })
+          .join('');
+
+        // Gán sự kiện cho các nút sao chép trong thẻ Bento
+        grid.querySelectorAll('.copy-email-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const email = btn.getAttribute('data-copy-email');
+            copyToClipboard(email, `Đã sao chép Gmail: ${email}`);
+          });
+        });
+
+        grid.querySelectorAll('.copy-card-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const val = btn.getAttribute('data-copy-text');
+            copyToClipboard(val, `Đã sao chép: ${val}`);
+          });
+        });
+      }
+
+      // =========================================================================
+      // 6. HIỂN THỊ BẢNG TÙY CHỈNH (EDITOR DRAWER)
+      // =========================================================================
+      function renderEditorFields() {
+        const p = state.profile;
+        document.getElementById('input-name').value = p.name || '';
+        document.getElementById('input-handle').value = p.handle || '';
+        document.getElementById('input-verified').checked = !!p.verified;
+        document.getElementById('input-bio').value = p.bio || '';
+        document.getElementById('input-status').value = p.status || '';
+        document.getElementById('input-social-facebook').value = (p.socials && p.socials.facebook) || '';
+        document.getElementById('input-social-tiktok').value = (p.socials && p.socials.tiktok) || '';
+        document.getElementById('input-social-instagram').value = (p.socials && p.socials.instagram) || '';
+        document.getElementById('input-social-zalo').value = (p.socials && p.socials.zalo) || '';
+        document.getElementById('input-social-email').value = (p.socials && p.socials.email) || '';
+      }
+
+      function renderEditorLinksList() {
+        const list = document.getElementById('editor-links-list');
+        if (!state.links.length) {
+          list.innerHTML = '<p class="text-xs text-slate-400 text-center py-4">Chưa có thẻ Bento nào.</p>';
+          return;
+        }
+
+        list.innerHTML = state.links
+          .map((link, idx) => {
+            const sizeLabel = link.size === 'wide' ? '2 cột' : '1 cột';
+            return `
+              <div class="p-3 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-between gap-2">
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-center gap-1.5">
+                    <p class="text-xs font-bold truncate">${escapeHTML(link.title)}</p>
+                    <span class="px-1.5 py-0.5 rounded bg-slate-200 text-[10px] font-medium shrink-0">${sizeLabel}</span>
+                  </div>
+                  <p class="text-[11px] text-slate-500 truncate">${escapeHTML(link.url)}</p>
+                </div>
+                <div class="flex items-center gap-1 shrink-0">
+                  <button type="button" data-move-up="${idx}" ${idx === 0 ? 'disabled' : ''} title="Di chuyển lên" class="p-1.5 rounded-lg hover:bg-slate-200 disabled:opacity-30 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>
+                  </button>
+                  <button type="button" data-move-down="${idx}" ${idx === state.links.length - 1 ? 'disabled' : ''} title="Di chuyển xuống" class="p-1.5 rounded-lg hover:bg-slate-200 disabled:opacity-30 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                  </button>
+                  <button type="button" data-edit-link="${escapeHTML(link.id)}" title="Sửa thẻ" class="p-1.5 rounded-lg text-violet-600 hover:bg-violet-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/></svg>
+                  </button>
+                  <button type="button" data-delete-link="${escapeHTML(link.id)}" title="Xóa thẻ" class="p-1.5 rounded-lg text-rose-600 hover:bg-rose-100 transition">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                  </button>
+                </div>
+              </div>
+            `;
+          })
+          .join('');
+
+        list.querySelectorAll('[data-move-up]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-move-up'));
+            if (idx > 0) {
+              const temp = state.links[idx - 1];
+              state.links[idx - 1] = state.links[idx];
+              state.links[idx] = temp;
+              saveState();
+              renderBentoGrid();
+              renderEditorLinksList();
+            }
+          });
+        });
+
+        list.querySelectorAll('[data-move-down]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const idx = Number(btn.getAttribute('data-move-down'));
+            if (idx < state.links.length - 1) {
+              const temp = state.links[idx + 1];
+              state.links[idx + 1] = state.links[idx];
+              state.links[idx] = temp;
+              saveState();
+              renderBentoGrid();
+              renderEditorLinksList();
+            }
+          });
+        });
+
+        list.querySelectorAll('[data-edit-link]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-edit-link');
+            const found = state.links.find((l) => l.id === id);
+            if (found) openLinkForm(found);
+          });
+        });
+
+        list.querySelectorAll('[data-delete-link]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            const id = btn.getAttribute('data-delete-link');
+            state.links = state.links.filter((l) => l.id !== id);
+            saveState();
+            renderBentoGrid();
+            renderEditorLinksList();
+            showToast('Đã xóa thẻ Bento.');
+          });
+        });
+      }
+
+      function renderThemeGrid() {
+        const grid = document.getElementById('theme-grid');
+        grid.innerHTML = THEME_ORDER.map((key) => {
+          const t = THEMES[key];
+          const active = state.theme === key;
+          return `
+            <button
+              type="button"
+              data-select-theme="${key}"
+              class="w-full p-3.5 rounded-2xl border text-left transition-all flex items-center justify-between gap-3 ${
+                active ? 'border-violet-600 bg-violet-50 ring-2 ring-violet-500/20' : 'border-slate-200 hover:border-slate-300 bg-white'
+              }"
+            >
+              <div>
+                <p class="text-xs font-bold text-slate-900">${t.name}</p>
+                <p class="text-[11px] text-slate-500 mt-0.5">${t.desc}</p>
+              </div>
+              <div class="flex items-center -space-x-1.5 shrink-0">
+                ${t.preview
+                  .map(
+                    (hex) =>
+                      `<span class="w-5 h-5 rounded-full border-2 border-white shadow-sm" style="background-color:${hex}"></span>`
+                  )
+                  .join('')}
+              </div>
+            </button>
+          `;
+        }).join('');
+
+        grid.querySelectorAll('[data-select-theme]').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            state.theme = btn.getAttribute('data-select-theme');
+            saveState();
+            renderAll();
+            showToast(`Đã đổi giao diện: ${THEMES[state.theme].name}`);
+          });
+        });
+      }
+
+      function renderAll() {
+        applyTheme();
+        renderProfile();
+        renderSocialRow();
+        renderBentoGrid();
+        renderEditorFields();
+        renderEditorLinksList();
+        renderThemeGrid();
+      }
+
+      // =========================================================================
+      // 7. ĐIỀU KHIỂN DRAWER, FORM THẺ BENTO, QR MODAL & XUẤT HTML
+      // =========================================================================
+      function openEditor() {
+        const backdrop = document.getElementById('editor-backdrop');
+        const drawer = document.getElementById('editor-drawer');
+        backdrop.classList.remove('hidden');
+        requestAnimationFrame(() => {
+          backdrop.classList.remove('opacity-0');
+          drawer.classList.remove('translate-x-full');
+        });
+      }
+
+      function closeEditor() {
+        const backdrop = document.getElementById('editor-backdrop');
+        const drawer = document.getElementById('editor-drawer');
+        backdrop.classList.add('opacity-0');
+        drawer.classList.add('translate-x-full');
+        setTimeout(() => {
+          backdrop.classList.add('hidden');
+        }, 300);
+      }
+
+      function switchEditorTab(tabName) {
+        ['profile', 'links', 'theme'].forEach((name) => {
+          const panel = document.getElementById(`tab-${name}`);
+          if (panel) panel.classList.toggle('hidden', name !== tabName);
+        });
+        document.querySelectorAll('.editor-tab').forEach((btn) => {
+          const isActive = btn.getAttribute('data-tab') === tabName;
+          btn.className = isActive
+            ? 'editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all bg-white text-violet-700 shadow-sm'
+            : 'editor-tab px-3 py-2 text-xs font-semibold rounded-lg transition-all text-slate-500 hover:text-slate-800';
+        });
+      }
+
+      function updateLinkUrlLabel() {
+        const action = document.getElementById('link-action').value;
+        const label = document.getElementById('link-url-label');
+        const input = document.getElementById('link-url');
+        if (action === 'email') {
+          label.textContent = 'Địa chỉ Gmail / Email *';
+          input.placeholder = 'kiakillgamming@gmail.com';
+        } else if (action === 'copy') {
+          label.textContent = 'Nội dung sẽ sao chép *';
+          input.placeholder = 'VD: Số tài khoản, Zalo, mã giảm giá...';
+        } else {
+          label.textContent = 'Đường dẫn (URL) *';
+          input.placeholder = 'https://...';
+        }
+      }
+
+      function openLinkForm(linkObj) {
+        const form = document.getElementById('link-form');
+        const formTitle = document.getElementById('link-form-title');
+        form.classList.remove('hidden');
+
+        if (linkObj) {
+          formTitle.textContent = 'Chỉnh sửa thẻ Bento';
+          document.getElementById('link-id').value = linkObj.id;
+          document.getElementById('link-title').value = linkObj.title || '';
+          document.getElementById('link-badge').value = linkObj.badge || '';
+          document.getElementById('link-badge-style').value = linkObj.badgeStyle || 'neutral';
+          document.getElementById('link-desc').value = linkObj.description || '';
+          document.getElementById('link-icon').value = linkObj.icon || 'sparkles';
+          document.getElementById('link-size').value = linkObj.size || 'normal';
+          document.getElementById('link-action').value = linkObj.action || 'url';
+          document.getElementById('link-cta').value = linkObj.ctaText || '';
+          document.getElementById('link-url').value = linkObj.url || '';
+        } else {
+          formTitle.textContent = 'Thêm thẻ Bento mới';
+          form.reset();
+          document.getElementById('link-id').value = '';
+          document.getElementById('link-size').value = 'normal';
+          document.getElementById('link-action').value = 'url';
+          document.getElementById('link-badge-style').value = 'cyber';
+        }
+        updateLinkUrlLabel();
+        form.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+
+      function renderQRCode(urlText) {
+        const container = document.getElementById('qrcode-container');
+        container.innerHTML = '';
+        const target = urlText || 'https://www.facebook.com/seal.t.kobiet';
+        try {
+          if (typeof QRCode !== 'undefined') {
+            new QRCode(container, {
+              text: target,
+              width: 176,
+              height: 176,
+              colorDark: '#0f172a',
+              colorLight: '#ffffff',
+              correctLevel: QRCode.CorrectLevel.M,
+            });
+          } else {
+            container.innerHTML = '<p class="text-xs text-slate-400 text-center">Không tải được thư viện QR.</p>';
+          }
+        } catch (err) {
+          container.innerHTML = '<p class="text-xs text-slate-400 text-center">Liên kết quá dài để tạo mã QR.</p>';
+        }
+      }
+
+      function openShareModal() {
+        const modal = document.getElementById('share-modal');
+        const input = document.getElementById('share-url-input');
+        const defaultUrl =
+          window.location.href && window.location.href.startsWith('http')
+            ? window.location.href
+            : state.profile.socials.facebook || 'https://www.facebook.com/seal.t.kobiet';
+        input.value = defaultUrl;
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        renderQRCode(defaultUrl);
+      }
+
+      function closeShareModal() {
+        const modal = document.getElementById('share-modal');
+        modal.classList.add('hidden');
+        modal.classList.remove('flex');
+      }
+
+      function exportStandaloneHTML() {
+        try {
+          const t = THEMES[state.theme] || THEMES['tech-violet'];
+          const p = state.profile;
+          const socialHtml = document.getElementById('social-row').innerHTML;
+          const bentoHtml = document.getElementById('bento-grid').innerHTML;
+          const footerText = document.getElementById('footer-text').textContent;
+
+          const standalone = `<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>${escapeHTML(p.name)} • Bio Chính Thức</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"><\/script>
+  <script>
+    tailwind.config = { theme: { extend: { fontFamily: { sans: ['"Be Vietnam Pro"', 'Inter', 'system-ui', 'sans-serif'] } } } };
+  <\/script>
+</head>
+<body class="antialiased selection:bg-violet-500/30 min-h-screen overflow-x-hidden ${t.body}">
+  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
+    <div class="absolute -top-32 -left-24 w-96 h-96 rounded-full blur-3xl opacity-45 ${t.blobs[0]}"></div>
+    <div class="absolute top-1/3 -right-24 w-96 h-96 rounded-full blur-3xl opacity-40 ${t.blobs[1]}"></div>
+    <div class="absolute -bottom-32 left-1/3 w-80 h-80 rounded-full blur-3xl opacity-35 ${t.blobs[2]}"></div>
+  </div>
+  <main class="relative z-10 w-full max-w-2xl mx-auto px-4 sm:px-6 py-14 sm:py-20">
+    <section class="flex flex-col items-center text-center mb-10">
+      <div class="w-28 h-28 sm:w-32 sm:h-32 rounded-full p-1 mb-5">
+        <div class="w-full h-full rounded-full p-0.5 shadow-lg ${t.avatarRing}">
+          <img src="${escapeHTML(p.avatar || DEFAULT_AVATAR)}" alt="${escapeHTML(p.name)}" class="w-full h-full object-cover rounded-full" />
+        </div>
+      </div>
+      <div class="flex items-center justify-center gap-2 mb-1">
+        <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">${escapeHTML(p.name)}</h1>
+        ${
+          p.verified
+            ? '<svg class="w-5 h-5 sm:w-6 sm:h-6 text-sky-400" viewBox="0 0 24 24" fill="currentColor"><path fill-rule="evenodd" d="M8.603 3.799A4.49 4.49 0 0112 2.25c1.357 0 2.573.6 3.397 1.549a4.49 4.49 0 013.498 1.307 4.491 4.491 0 011.307 3.497A4.49 4.49 0 0121.75 12a4.49 4.49 0 01-1.549 3.397 4.491 4.491 0 01-1.307 3.497 4.491 4.491 0 01-3.497 1.307A4.49 4.49 0 0112 21.75a4.49 4.49 0 01-3.397-1.549 4.49 4.49 0 01-3.498-1.306 4.491 4.491 0 01-1.307-3.498A4.49 4.49 0 012.25 12c0-1.357.6-2.573 1.549-3.397a4.49 4.49 0 011.307-3.497 4.49 4.49 0 013.497-1.307zm7.007 6.387a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd"/></svg>'
+            : ''
+        }
+      </div>
+      <p class="text-xs sm:text-sm font-semibold tracking-wide mb-3 ${t.handle}">${escapeHTML(p.handle || '')}</p>
+      <p class="text-sm sm:text-base max-w-lg leading-relaxed mb-4 ${t.bio}">${escapeHTML(p.bio || '')}</p>
+      ${
+        p.status
+          ? `<div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-medium border backdrop-blur-md mb-6 ${t.statusPill}">
+              <span class="relative flex h-2 w-2"><span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span><span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span></span>
+              <span>${escapeHTML(p.status)}</span>
+            </div>`
+          : ''
+      }
+      <div class="flex items-center justify-center flex-wrap gap-2.5 sm:gap-3">${socialHtml}</div>
+    </section>
+    <section><div class="grid grid-cols-1 sm:grid-cols-2 gap-4">${bentoHtml}</div></section>
+    <footer class="mt-12 pt-6 text-center"><p class="text-xs opacity-60">${escapeHTML(footerText)}</p></footer>
+  </main>
+  <div id="toast" class="fixed bottom-6 left-1/2 -translate-x-1/2 px-4 py-2.5 rounded-2xl bg-slate-900 text-white text-xs font-medium shadow-xl opacity-0 transition-opacity duration-300 pointer-events-none">Đã sao chép!</div>
+  <script>
+    function copyVal(text, label) {
+      var ta = document.createElement('textarea'); ta.value = text; ta.style.position = 'fixed'; ta.style.top = '-9999px';
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
+      var t = document.getElementById('toast'); t.textContent = label; t.style.opacity = '1';
+      setTimeout(function(){ t.style.opacity = '0'; }, 2400);
+    }
+    document.querySelectorAll('.copy-email-btn').forEach(function(b){ b.addEventListener('click', function(){ copyVal(b.getAttribute('data-copy-email'), 'Đã sao chép Gmail!'); }); });
+    document.querySelectorAll('.copy-card-btn').forEach(function(b){ b.addEventListener('click', function(){ copyVal(b.getAttribute('data-copy-text'), 'Đã sao chép!'); }); });
+  <\/script>
+</body>
+</html>`;
+
+          const blob = new Blob([standalone], { type: 'text/html;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = 'index.html';
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+          URL.revokeObjectURL(url);
+          showToast('Đã tải xuống file index.html độc lập!');
+        } catch (err) {
+          showToast('Có lỗi khi xuất file HTML.');
+        }
+      }
+
+      // =========================================================================
+      // 8. GÁN SỰ KIỆN TƯƠNG TÁC (EVENT LISTENERS)
+      // =========================================================================
+      function bindEvents() {
+        // Đổi nhanh giao diện
+        document.getElementById('quick-theme-btn').addEventListener('click', () => {
+          const idx = THEME_ORDER.indexOf(state.theme);
+          state.theme = THEME_ORDER[(idx + 1) % THEME_ORDER.length];
+          saveState();
+          renderAll();
+          showToast(`Giao diện: ${THEMES[state.theme].name}`);
+        });
+
+        // Mở / đóng bảng tùy chỉnh
+        document.getElementById('open-editor-btn').addEventListener('click', openEditor);
+        document.getElementById('close-editor-btn').addEventListener('click', closeEditor);
+        document.getElementById('editor-backdrop').addEventListener('click', (e) => {
+          if (e.target.id === 'editor-backdrop') closeEditor();
+        });
+
+        // Chuyển Tab trong bảng tùy chỉnh
+        document.querySelectorAll('.editor-tab').forEach((btn) => {
+          btn.addEventListener('click', () => switchEditorTab(btn.getAttribute('data-tab')));
+        });
+
+        // Tải ảnh đại diện trực tiếp
+        const avatarInput = document.getElementById('avatar-file-input');
+        document.getElementById('avatar-trigger').addEventListener('click', () => avatarInput.click());
+        document.getElementById('editor-upload-avatar-btn').addEventListener('click', () => avatarInput.click());
+        document.getElementById('editor-reset-avatar-btn').addEventListener('click', () => {
+          state.profile.avatar = DEFAULT_AVATAR;
+          saveState();
+          renderProfile();
+          showToast('Đã đặt lại ảnh đại diện mặc định.');
+        });
+
+        avatarInput.addEventListener('change', (e) => {
+          const file = e.target.files && e.target.files[0];
+          if (!file) return;
+          const reader = new FileReader();
+          reader.onload = function (ev) {
+            state.profile.avatar = ev.target.result;
+            saveState();
+            renderProfile();
+            showToast('Đã cập nhật ảnh đại diện!');
+          };
+          reader.readAsDataURL(file);
+          avatarInput.value = '';
+        });
+
+        // Cập nhật trực tiếp thông tin thương hiệu
+        document.getElementById('input-name').addEventListener('input', (e) => {
+          state.profile.name = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-handle').addEventListener('input', (e) => {
+          state.profile.handle = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-verified').addEventListener('change', (e) => {
+          state.profile.verified = e.target.checked;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-bio').addEventListener('input', (e) => {
+          state.profile.bio = e.target.value;
+          saveState();
+          renderProfile();
+        });
+        document.getElementById('input-status').addEventListener('input', (e) => {
+          state.profile.status = e.target.value;
+          saveState();
+          renderProfile();
+        });
+
+        // Cập nhật trực tiếp các kênh tư vấn & đồng bộ Gmail hợp tác
+        ['facebook', 'tiktok', 'instagram', 'zalo', 'email'].forEach((key) => {
+          document.getElementById(`input-social-${key}`).addEventListener('input', (e) => {
+            const val = e.target.value.trim();
+            if (!state.profile.socials) state.profile.socials = {};
+            state.profile.socials[key] = val;
+            if (key === 'email') {
+              const emailCard = state.links.find((l) => l.action === 'email');
+              if (emailCard) emailCard.url = val;
+              renderBentoGrid();
+              renderEditorLinksList();
+            }
+            saveState();
+            renderSocialRow();
+          });
+        });
+
+        // Quản lý Form thêm / sửa thẻ Bento
+        document.getElementById('add-link-btn').addEventListener('click', () => openLinkForm(null));
+        document.getElementById('cancel-link-form').addEventListener('click', () => {
+          document.getElementById('link-form').classList.add('hidden');
+        });
+        document.getElementById('link-action').addEventListener('change', updateLinkUrlLabel);
+
+        document.getElementById('link-form').addEventListener('submit', (e) => {
+          e.preventDefault();
+          const id = document.getElementById('link-id').value;
+          const payload = {
+            id: id || 'bento-' + Date.now(),
+            title: document.getElementById('link-title').value.trim(),
+            badge: document.getElementById('link-badge').value.trim(),
+            badgeStyle: document.getElementById('link-badge-style').value,
+            description: document.getElementById('link-desc').value.trim(),
+            icon: document.getElementById('link-icon').value,
+            size: document.getElementById('link-size').value,
+            action: document.getElementById('link-action').value,
+            ctaText: document.getElementById('link-cta').value.trim(),
+            url: document.getElementById('link-url').value.trim(),
+          };
+
+          if (!payload.title || !payload.url) return;
+
+          if (id) {
+            const idx = state.links.findIndex((l) => l.id === id);
+            if (idx !== -1) state.links[idx] = payload;
+            showToast('Đã cập nhật thẻ Bento!');
+          } else {
+            state.links.push(payload);
+            showToast('Đã thêm thẻ Bento mới!');
+          }
+
+          saveState();
+          renderBentoGrid();
+          renderEditorLinksList();
+          document.getElementById('link-form').classList.add('hidden');
+        });
+
+        // Khôi phục mặc định (hộp xác nhận trực tiếp, không dùng confirm())
+        document.getElementById('request-reset-btn').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.remove('hidden');
+        });
+        document.getElementById('confirm-reset-no').addEventListener('click', () => {
+          document.getElementById('confirm-reset-box').classList.add('hidden');
+        });
+        document.getElementById('confirm-reset-yes').addEventListener('click', () => {
+          state = cloneDefault();
+          saveState();
+          renderAll();
+          document.getElementById('confirm-reset-box').classList.add('hidden');
+          showToast('Đã khôi phục toàn bộ nội dung mặc định.');
+        });
+
+        // Chia sẻ & QR Code
+        document.getElementById('open-share-btn').addEventListener('click', openShareModal);
+        document.getElementById('close-share-btn').addEventListener('click', closeShareModal);
+        document.getElementById('share-modal').addEventListener('click', (e) => {
+          if (e.target.id === 'share-modal') closeShareModal();
+        });
+        document.getElementById('share-url-input').addEventListener('input', (e) => {
+          renderQRCode(e.target.value.trim());
+        });
+        document.getElementById('copy-share-url-btn').addEventListener('click', () => {
+          const val = document.getElementById('share-url-input').value.trim();
+          copyToClipboard(val, 'Đã sao chép liên kết trang Bio!');
+        });
+
+        // Xuất file index.html
+        document.getElementById('export-html-btn').addEventListener('click', exportStandaloneHTML);
+        document.getElementById('drawer-export-btn').addEventListener('click', exportStandaloneHTML);
+
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape') {
+            closeEditor();
+            closeShareModal();
+          }
+        });
+      }
+
+      // Khởi chạy ứng dụng
+      switchEditorTab('profile');
+      renderAll();
+      bindEvents();
+    })();
+  </script>
+</body>
+</html>
